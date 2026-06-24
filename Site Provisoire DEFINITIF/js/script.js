@@ -1,116 +1,19 @@
 // ==========================================
-// SCRIPT PRINCIPAL CORRIGÉ ET STABLE
+// SCRIPT PRINCIPAL - OPTIMISÉ
 // ==========================================
 
-document.addEventListener("DOMContentLoaded", function () {
+import {
+  getCommissariats,
+  searchCommissariats,
+  getActualites,
+  getUrgences,
+  sendContact,
+  sendDeclaration
+} from './api.js';
 
-  // ==========================================
-  // 🔴 GESTION PUB
-  // ==========================================
-  const ADS_ENABLED = true;
-  const adsWrapper = document.getElementById("ads-wrapper");
+document.addEventListener("DOMContentLoaded", async function () {
 
-  function loadAdsState() {
-    if (!adsWrapper) return;
-
-    const adsVisible = localStorage.getItem("adsVisible");
-    if (adsVisible === "false") {
-      adsWrapper.classList.add("ads-hidden");
-    }
-  }
-
-  window.toggleAds = function () {
-    if (!adsWrapper) return;
-
-    const isHidden = adsWrapper.classList.contains("ads-hidden");
-
-    if (isHidden) {
-      adsWrapper.classList.remove("ads-hidden");
-      localStorage.setItem("adsVisible", "true");
-    } else {
-      adsWrapper.classList.add("ads-hidden");
-      localStorage.setItem("adsVisible", "false");
-    }
-  };
-
-  loadAdsState();
-
-  if (!ADS_ENABLED && adsWrapper) {
-    adsWrapper.classList.add("ads-hidden");
-  }
-
-  // ==========================================
-  // 🎯 CAROUSEL PUB (sécurisé)
-  // ==========================================
-  function createCarousel(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    const track = container.querySelector(".ad-track");
-    const slides = container.querySelectorAll(".ad-slide");
-    const prevBtn = container.querySelector(".prev");
-    const nextBtn = container.querySelector(".next");
-
-    if (!track || slides.length === 0) return;
-
-    let index = 0;
-    let interval;
-
-    function updateSlide() {
-      track.style.transform = `translateX(-${index * 100}%)`;
-    }
-
-    function nextSlide() {
-      index = (index + 1) % slides.length;
-      updateSlide();
-    }
-
-    function prevSlide() {
-      index = (index - 1 + slides.length) % slides.length;
-      updateSlide();
-    }
-
-    function startAuto() {
-      interval = setInterval(nextSlide, 3000);
-    }
-
-    function stopAuto() {
-      clearInterval(interval);
-    }
-
-    if (nextBtn) nextBtn.addEventListener("click", nextSlide);
-    if (prevBtn) prevBtn.addEventListener("click", prevSlide);
-
-    container.addEventListener("mouseenter", stopAuto);
-    container.addEventListener("mouseleave", startAuto);
-
-    startAuto();
-  }
-
-  createCarousel("adLeft");
-  createCarousel("adRight");
-
-  // ==========================================
-  // 📷 IMAGE DYNAMIQUE FORMULAIRE
-  // ==========================================
-  const typeDeclaration = document.getElementById("declaration-type");
-  const imageField = document.getElementById("image-field");
-
-  if (typeDeclaration && imageField) {
-    typeDeclaration.addEventListener("change", function () {
-      const typesAvecImage = ["perte", "vol", "disparition", "autre"];
-
-      if (typesAvecImage.includes(this.value)) {
-        imageField.style.display = "block";
-      } else {
-        imageField.style.display = "none";
-      }
-    });
-  }
-
-  // ==========================================
-  // 🍔 MENU HAMBURGER
-  // ==========================================
+  // ========== MENU HAMBURGER ==========
   const hamburger = document.querySelector(".hamburger");
   const nav = document.querySelector("nav");
 
@@ -121,49 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ==========================================
-  // 📱 SOUS-MENUS MOBILE (CORRIGÉ)
-  // ==========================================
-  if (window.innerWidth <= 1024) {
-    document.querySelectorAll("nav li").forEach(li => {
-      const submenu = li.querySelector("ul");
-      const link = li.querySelector("a");
-
-      if (submenu && link) {
-        submenu.style.display = "none";
-
-        link.addEventListener("click", function (e) {
-          e.preventDefault();
-          submenu.style.display =
-            submenu.style.display === "flex" ? "none" : "flex";
-        });
-      }
-    });
-  }
-
-  // ==========================================
-  // 🚨 BANNIÈRE URGENCE
-  // ==========================================
-  const emergencyBannerEnabled = true;
-  const banner = document.getElementById("emergency-banner");
-  const header = document.querySelector("header");
-
-  if (banner && header) {
-    if (emergencyBannerEnabled) {
-      banner.style.display = "block";
-
-      setTimeout(() => {
-        header.style.marginTop = banner.offsetHeight + "px";
-      }, 50);
-    } else {
-      banner.style.display = "none";
-      header.style.marginTop = "0";
-    }
-  }
-
-  // ==========================================
-  // 🌙 MODE SOMBRE
-  // ==========================================
+  // ========== MODE SOMBRE ==========
   const themeToggle = document.querySelector(".theme-toggle");
 
   if (localStorage.getItem("theme") === "dark") {
@@ -173,7 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
   if (themeToggle) {
     themeToggle.addEventListener("click", function () {
       document.body.classList.toggle("dark-mode");
-
       localStorage.setItem(
         "theme",
         document.body.classList.contains("dark-mode") ? "dark" : "light"
@@ -181,30 +41,164 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ==========================================
-  // 🔗 SCROLL ANCRE
-  // ==========================================
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener("click", function (e) {
-      const target = document.querySelector(this.getAttribute("href"));
-      if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: "smooth" });
+  // ========== BANNIÈRE URGENCE ==========
+  const emergencyBanner = document.getElementById("emergency-banner");
+  const header = document.querySelector("header");
+
+  if (emergencyBanner && header) {
+    header.style.marginTop = emergencyBanner.offsetHeight + "px";
+  }
+
+  // ========== CHARGEMENT COMMISSARIATS ==========
+  const commissariatsContainer = document.getElementById("commissariats-list");
+  if (commissariatsContainer) {
+    const commissariats = await getCommissariats();
+    if (commissariats.length > 0) {
+      commissariatsContainer.innerHTML = commissariats.map(c => `
+        <div class="commissariat-item">
+          <h3>${c.nom}</h3>
+          <p><strong>📍</strong> ${c.adresse}</p>
+          <p><strong>📞</strong> ${c.telephone}</p>
+          <p><strong>⏰</strong> ${c.horaires || 'Non disponible'}</p>
+        </div>
+      `).join('');
+    }
+  }
+
+  // ========== CHARGEMENT URGENCES ==========
+  const urgencesContainer = document.getElementById("urgences-list");
+  if (urgencesContainer) {
+    const urgences = await getUrgences();
+    if (urgences.length > 0) {
+      urgencesContainer.innerHTML = urgences.map(u => `
+        <div class="urgence-item">
+          <h3>${u.nom}</h3>
+          <p class="urgence-number"><strong>${u.numero}</strong></p>
+          <p>${u.description || ''}</p>
+        </div>
+      `).join('');
+    }
+  }
+
+  // ========== CHARGEMENT ACTUALITÉS ==========
+  const newsGrid = document.querySelector(".news-grid");
+  if (newsGrid && newsGrid.id !== "news-grid-home") {
+    const actualites = await getActualites();
+    if (actualites.length > 0) {
+      newsGrid.innerHTML = actualites.map(a => `
+        <article class="news-card">
+          <div class="news-image">
+            <img src="${a.image_url || 'images/default.jpg'}" alt="${a.titre}" loading="lazy">
+          </div>
+          <div class="news-content">
+            <span class="news-date">${new Date(a.date_publication).toLocaleDateString('fr-FR')}</span>
+            <h3 class="news-title">${a.titre}</h3>
+            <p class="news-description">${a.contenu.substring(0, 150)}...</p>
+            <a href="actualite-detail.html?id=${a.id}" class="read-more">Lire la suite →</a>
+          </div>
+        </article>
+      `).join('');
+    }
+  }
+
+  // ========== FORMULAIRE CONTACT ==========
+  const contactForm = document.getElementById("contact-form");
+  if (contactForm) {
+    contactForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = {
+        nom: document.getElementById("nom").value,
+        email: document.getElementById("email").value,
+        sujet: document.getElementById("sujet").value,
+        message: document.getElementById("message").value,
+        telephone: document.getElementById("telephone")?.value || ""
+      };
+      const result = await sendContact(formData);
+      if (result.id) {
+        alert("Message envoyé avec succès!");
+        contactForm.reset();
+      } else {
+        alert("Erreur lors de l'envoi du message.");
       }
     });
-  });
+  }
 
-  // ==========================================
-  // 🔍 RECHERCHE COMMISSARIAT
-  // ==========================================
-  const searchButton = document.querySelector(".search-button");
-  const resultsSection = document.getElementById("results");
-
-  if (searchButton && resultsSection) {
-    searchButton.addEventListener("click", function () {
-      resultsSection.style.display = "block";
-      resultsSection.scrollIntoView({ behavior: "smooth" });
+  // ========== FORMULAIRE DÉCLARATION ==========
+  const declarationForm = document.getElementById("declaration-form");
+  if (declarationForm) {
+    declarationForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = {
+        type: document.getElementById("type").value,
+        nom: document.getElementById("nom-decl").value,
+        email: document.getElementById("email-decl").value,
+        telephone: document.getElementById("tel-decl")?.value || "",
+        description: document.getElementById("description").value,
+        lieu: document.getElementById("lieu")?.value || "",
+        date_incident: document.getElementById("date-incident")?.value || null
+      };
+      const result = await sendDeclaration(formData);
+      if (result.id) {
+        alert(`Déclaration enregistrée! Numéro de dossier: ${result.id}`);
+        declarationForm.reset();
+      } else {
+        alert("Erreur lors de l'enregistrement.");
+      }
     });
   }
+
+  // ========== RECHERCHE COMMISSARIATS ==========
+  const searchButton = document.querySelector(".search-button");
+  const searchInput = document.querySelector(".search-input");
+  const resultsSection = document.getElementById("results");
+
+  if (searchButton && searchInput && resultsSection) {
+    searchButton.addEventListener("click", async () => {
+      const query = searchInput.value.trim();
+      if (query) {
+        const results = await searchCommissariats(query);
+        if (results.length > 0) {
+          resultsSection.innerHTML = results.map(c => `
+            <div class="commissariat-item">
+              <h3>${c.nom}</h3>
+              <p><strong>📍</strong> ${c.adresse}</p>
+              <p><strong>📞</strong> ${c.telephone}</p>
+              <p><strong>⏰</strong> ${c.horaires || 'Non disponible'}</p>
+            </div>
+          `).join('');
+          resultsSection.style.display = "block";
+          resultsSection.scrollIntoView({ behavior: "smooth" });
+        } else {
+          resultsSection.innerHTML = "<p>Aucun résultat trouvé.</p>";
+          resultsSection.style.display = "block";
+        }
+      }
+    });
+  }
+
+  // ========== CAROUSEL PUB ==========
+  function createCarousel(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const track = container.querySelector(".ad-track");
+    const slides = container.querySelectorAll(".ad-slide");
+    if (!track || slides.length === 0) return;
+
+    let index = 0;
+    const interval = setInterval(() => {
+      index = (index + 1) % slides.length;
+      track.style.transform = `translateX(-${index * 100}%)`;
+    }, 3000);
+
+    container.addEventListener("mouseenter", () => clearInterval(interval));
+    container.addEventListener("mouseleave", () => setInterval(() => {
+      index = (index + 1) % slides.length;
+      track.style.transform = `translateX(-${index * 100}%)`;
+    }, 3000));
+  }
+
+  createCarousel("adLeft");
+  createCarousel("adRight");
 
 });
