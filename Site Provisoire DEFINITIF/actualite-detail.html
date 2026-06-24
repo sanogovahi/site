@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Détail d'une actualité - Police Nationale de Côte d'Ivoire">
+  <title>Actualité - Police Nationale</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo-section">
+        <img src="images/logo1.png" alt="Logo Police Nationale" class="logo">
+        <div class="header-text">
+          <h1>POLICE NATIONALE</h1>
+          <p class="slogan">Servir Notre Vocation • Merci de Nous Faire Confiance</p>
+        </div>
+      </div>
+      <button class="hamburger" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="index.html">Accueil</a></li>
+      <li>
+        <a href="javascript:void(0)">À Propos</a>
+        <ul>
+          <li><a href="histoire.html">Histoire</a></li>
+          <li><a href="nos-missions.html">Nos Missions</a></li>
+          <li><a href="organisation.html">Organisation</a></li>
+          <li><a href="corps-et-grades.html">Corps et Grades</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="javascript:void(0)">Services</a>
+        <ul>
+          <li><a href="commissariats.html">Trouver un Commissariat</a></li>
+          <li><a href="urgences.html">Urgences</a></li>
+          <li><a href="declarations.html">Déclarations</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="javascript:void(0)">Textes et Lois</a>
+        <ul>
+          <li><a href="charte.html">La Charte</a></li>
+          <li><a href= "documents/NOUVEAU_CODE_PENAL_2023.pdf" target="_blank">Code pénal 2023</a></li>
+        </ul>
+      </li>
+      <li><a href="actualites.html">Actualités</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li>
+        <button class="theme-toggle" aria-label="Activer le mode sombre">🌙 Mode Sombre</button>
+      </li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="news-detail-page" style="padding: 40px 0;">
+      <a href="actualites.html" class="news-detail-return">← Retour aux actualités</a>
+      <div class="news-detail-card" style="margin-top: 25px;">
+        <div id="detailMedia" class="news-detail-media"></div>
+        <div class="news-detail-content">
+          <span id="detailDate" class="news-detail-date"></span>
+          <h1 id="detailTitle" class="news-detail-title"></h1>
+          <p id="detailText" class="news-detail-text"></p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-section">
+        <h3>À Propos</h3>
+        <ul>
+          <li><a href="histoire.html">Notre Histoire</a></li>
+          <li><a href="nos-missions.html">Nos Missions</a></li>
+          <li><a href="organisation.html">Organisation</a></li>
+          <li><a href="corps-et-grades.html">Corps et Grades</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Services</h3>
+        <ul>
+          <li><a href="commissariats.html">Trouver un Commissariat</a></li>
+          <li><a href="urgences.html">Urgences</a></li>
+          <li><a href="declarations.html">Déclarations</a></li>
+          <li><a href="contact.html">Nous Contacter</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Informations</h3>
+        <ul>
+          <li><a href="actualites.html">Actualités</a></li>
+          <li><a href="#">Ressources</a></li>
+          <li><a href="#">Mentions Légales</a></li>
+          <li><a href="#">Politique de Confidentialité</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Contact</h3>
+        <ul>
+          <li>📍 Abidjan, Côte d'Ivoire</li>
+          <li>📞 +225 (à compléter)</li>
+          <li>✉️ servicecomdgpn@gmail.com</li>
+          <li>🌐 www.police-nationale.ci</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024-2025 Police Nationale de Côte d'Ivoire. Tous droits réservés.</p>
+    </div>
+  </footer>
+<div class="news-search">
+        <input id="newsSearchInput" type="search" placeholder="Rechercher une actualité..." aria-label="Recherche d'actualités">
+        <button id="newsSearchButton" type="button">Recherche</button>
+      </div>
+  <script>
+    const details = {
+      1: {
+        title: 'Campagne de Sensibilisation 2025',
+        date: '28 avril 2025',
+        text: 'La Police Nationale a lancé une large campagne de sensibilisation aux droits et devoirs civiques dans les écoles, les quartiers et auprès des jeunes. L’objectif est de renforcer la confiance entre les citoyens et les forces de l’ordre, tout en diffusant des messages de prévention et de respect mutuel.',
+        mediaType: 'image',
+        mediaSrc: '3N9A1282.JPG',
+        mediaAlt: 'Campagne de sensibilisation'
+      },
+      2: {
+        title: 'Formation Continue des Agents',
+        date: '20 avril 2025',
+        text: 'Un programme de formation continue a été déployé pour les agents de police, axé sur les techniques modernes d’investigation, la protection des victimes et le respect des droits humains. Cette initiative vise à renforcer les compétences opérationnelles sur le terrain.',
+        mediaType: 'image',
+        mediaSrc: '3N9A1295.JPG',
+        mediaAlt: 'Formation des agents'
+      },
+      3: {
+        title: 'Opération de Sécurité Réussie',
+        date: '15 avril 2025',
+        text: 'Les forces de police ont démantelé un réseau de criminalité dans plusieurs quartiers de la capitale. L’opération a conduit à la saisie de matériel illégal et à l’arrestation de 47 suspects, renforçant la sécurité locale.',
+        mediaType: 'video',
+        mediaSrc: 'table/FILM POLICE-GIZ PROJET VBG 2025 def_1.mp4',
+        mediaAlt: 'Vidéo opération de sécurité'
+      },
+      4: {
+        title: 'Partenariat International',
+        date: '10 avril 2025',
+        text: 'La Police Nationale renforce la coopération transfrontalière avec les autorités policières de la sous-région. Ce partenariat vise à mieux combattre le crime organisé et à assurer une meilleure coordination entre les pays voisins.',
+        mediaType: 'image',
+        mediaSrc: 'IMG-20250728-WA0049.jpg',
+        mediaAlt: 'Partenariat international'
+      },
+      5: {
+        title: 'Cybersécurité Renforcée',
+        date: '5 avril 2025',
+        text: 'Une nouvelle unité spécialisée dans la cybercriminalité a été créée pour lutter contre la fraude en ligne et les délits numériques. Les nouvelles ressources permettent une meilleure protection des citoyens sur internet.',
+        mediaType: 'image',
+        mediaSrc: 'IMG-20250728-WA0052.jpg',
+        mediaAlt: 'Cybersécurité renforcée'
+      },
+      6: {
+        title: 'Assistance aux Victimes',
+        date: '1er avril 2025',
+        text: 'Un centre d’assistance a été ouvert pour les victimes de crime, offrant orientation juridique, soutien psychologique et aide sociale gratuite. L’objectif est d’accompagner toutes les personnes vulnérables après une attaque ou un incident.',
+        mediaType: 'image',
+        mediaSrc: 'IMG-20250728-WA0056.jpg',
+        mediaAlt: 'Assistance aux victimes'
+      }
+    };
+
+    function getQueryParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+
+    function renderDetail(article) {
+      const titleEl = document.getElementById('detailTitle');
+      const dateEl = document.getElementById('detailDate');
+      const textEl = document.getElementById('detailText');
+      const mediaEl = document.getElementById('detailMedia');
+
+      if (!article) {
+        titleEl.textContent = 'Actualité non trouvée';
+        dateEl.textContent = '';
+        textEl.textContent = 'L’actualité demandée est introuvable. Retournez à la page des actualités pour continuer votre navigation.';
+        mediaEl.innerHTML = '';
+        return;
+      }
+
+      titleEl.textContent = article.title;
+      dateEl.textContent = article.date;
+      textEl.textContent = article.text;
+
+      if (article.mediaType === 'video') {
+        mediaEl.innerHTML = `<video controls poster="${article.mediaSrc}" style="width:100%; height:auto; display:block; border-radius:0; max-height:520px;"><source src="${article.mediaSrc}" type="video/mp4">Votre navigateur ne prend pas en charge la vidéo.</video>`;
+      } else {
+        mediaEl.innerHTML = `<img src="${article.mediaSrc}" alt="${article.mediaAlt}" loading="lazy" style="width:100%; height:auto; display:block; object-fit:cover;">`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const id = parseInt(getQueryParam('id'), 10);
+      renderDetail(details[id]);
+    });
+  </script>
+  <script src="js/script.js"></script>
+</body>
+</html>
