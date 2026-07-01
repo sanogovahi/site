@@ -56,3 +56,30 @@ export const sendDeclarationEmail = async (email, nom, declarationId) => {
     console.error('Erreur lors de l\'envoi de l\'email:', error);
   }
 };
+export const sendNotificationToDGPN = async ({ nom, email, telephone, sujet, message }) => {
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: "servicecomdgpn@gmail.com",
+      subject: `📩 Nouveau message : ${sujet}`,
+      html: `
+        <h2>Nouveau message reçu depuis le site DGPN</h2>
+
+        <p><strong>Nom :</strong> ${nom}</p>
+        <p><strong>Email :</strong> ${email}</p>
+        <p><strong>Téléphone :</strong> ${telephone || "Non renseigné"}</p>
+        <p><strong>Sujet :</strong> ${sujet}</p>
+
+        <hr>
+
+        <p><strong>Message :</strong></p>
+
+        <p>${message.replace(/\n/g, "<br>")}</p>
+      `
+    });
+
+    console.log("Notification DGPN envoyée.");
+  } catch (err) {
+    console.error(err);
+  }
+};
