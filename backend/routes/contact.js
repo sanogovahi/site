@@ -1,6 +1,9 @@
 import express from 'express';
 import { queryAsync, runAsync } from '../db.js';
-import { sendContactEmail } from '../email.js';
+import {
+  sendContactEmail,
+  sendNotificationToDGPN
+} from '../email.js';
 import { validateContact, handleValidationErrors } from '../validators.js';
 
 const router = express.Router();
