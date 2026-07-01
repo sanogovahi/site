@@ -34,17 +34,15 @@ router.post('/', validateContact, handleValidationErrors, async (req, res, next)
       [nom, email, sujet, message, telephone || null]
     );
 
-    // Envoyer email de confirmation
-    await sendContactEmail(email, nom, sujet);
+  // Email envoyé au visiteur
+await sendContactEmail(email, nom, sujet);
 
-    res.status(201).json({
-      success: true,
-      id: result.id,
-      message: 'Message enregistré et confirmation envoyée'
-    });
-  } catch (error) {
-    next(error);
-  }
+// Notification envoyée à la DGPN
+await sendNotificationToDGPN({
+  nom,
+  email,
+  telephone,
+  sujet,
+  message
 });
-
 export default router;
