@@ -1,38 +1,46 @@
 import express from 'express';
 import { queryAsync, runAsync } from '../db.js';
 import { sendContactEmail } from '../email.js';
+import { validateContact, handleValidationErrors } from '../validators.js';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+// GET tous les contacts (admin)
+router.get('/', async (req, res, next) => {
   try {
     const contacts = await queryAsync(
-      'SELECT * FROM contacts ORDER BY created_at DESC'
+      'SELECT * FROM contacts ORDER BY created_at DESC LIMIT 100'
     );
-    res.json(contacts);
+    res.json({
+      success: true,
+      count: contacts.length,
+      data: contacts
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
-router.post('/', async (req, res) => {
+// POST enregistrer contact
+router.post('/', validateContact, handleValidationErrors, async (req, res, next) => {
   try {
     const { nom, email, sujet, message, telephone } = req.body;
 
-    if (!nom || !email || !sujet || !message) {
-      return res.status(400).json({ error: 'Champs obligatoires manquants' });
-    }
-
     const result = await runAsync(
       'INSERT INTO contacts (nom, email, sujet, message, telephone) VALUES (?, ?, ?, ?, ?)',
-      [nom, email, sujet, message, telephone]
+      [nom, email, sujet, message, telephone || null]
     );
 
+    // Envoyer email de confirmation
     await sendContactEmail(email, nom, sujet);
 
-    res.status(201).json({ id: result.id, message: 'Message enregistré' });
+    res.status(201).json({
+      success: true,
+      id: result.id,
+      message: 'Message enregistré et confirmation envoyée'
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
