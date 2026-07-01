@@ -1,20 +1,27 @@
 import express from 'express';
 import { queryAsync, runAsync } from '../db.js';
+import { validateActualite, validateId, handleValidationErrors } from '../validators.js';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+// GET toutes les actualités
+router.get('/', async (req, res, next) => {
   try {
     const actualites = await queryAsync(
-      'SELECT * FROM actualites ORDER BY date_publication DESC LIMIT 20'
+      'SELECT * FROM actualites ORDER BY date_publication DESC LIMIT 50'
     );
-    res.json(actualites);
+    res.json({
+      success: true,
+      count: actualites.length,
+      data: actualites
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
-router.get('/:id', async (req, res) => {
+// GET actualité par ID
+router.get('/:id', validateId, handleValidationErrors, async (req, res, next) => {
   try {
     const actualites = await queryAsync(
       'SELECT * FROM actualites WHERE id = ?',
@@ -25,42 +32,49 @@ router.get('/:id', async (req, res) => {
     }
     res.json(actualites[0]);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
-router.post('/', async (req, res) => {
+// POST créer actualité
+router.post('/', validateActualite, handleValidationErrors, async (req, res, next) => {
   try {
     const { titre, contenu, image_url, auteur } = req.body;
     const result = await runAsync(
       'INSERT INTO actualites (titre, contenu, image_url, auteur) VALUES (?, ?, ?, ?)',
-      [titre, contenu, image_url, auteur]
+      [titre, contenu, image_url || null, auteur || 'Admin']
     );
-    res.status(201).json({ id: result.id, message: 'Actualité créée' });
+    res.status(201).json({
+      success: true,
+      id: result.id,
+      message: 'Actualité créée avec succès'
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
-router.put('/:id', async (req, res) => {
+// PUT mettre à jour actualité
+router.put('/:id', validateId, validateActualite, handleValidationErrors, async (req, res, next) => {
   try {
     const { titre, contenu, image_url, auteur } = req.body;
     await runAsync(
       'UPDATE actualites SET titre = ?, contenu = ?, image_url = ?, auteur = ? WHERE id = ?',
       [titre, contenu, image_url, auteur, req.params.id]
     );
-    res.json({ message: 'Actualité mise à jour' });
+    res.json({ success: true, message: 'Actualité mise à jour' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
-router.delete('/:id', async (req, res) => {
+// DELETE actualité
+router.delete('/:id', validateId, handleValidationErrors, async (req, res, next) => {
   try {
     await runAsync('DELETE FROM actualites WHERE id = ?', [req.params.id]);
-    res.json({ message: 'Actualité supprimée' });
+    res.json({ success: true, message: 'Actualité supprimée' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
